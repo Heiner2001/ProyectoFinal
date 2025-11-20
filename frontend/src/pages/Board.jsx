@@ -89,10 +89,10 @@ function Board() {
 
     try {
       // Conectar directamente al backend para WebSockets
-      // En producción usar Railway, en desarrollo usar localhost
+      // PRIORIDAD: Verificar hostname primero (más confiable en tiempo de ejecución)
       const getWebSocketUrl = () => {
-        if (import.meta.env.PROD || window.location.hostname === 'heiner2001.github.io') {
-          // En producción, usar Railway con WSS (WebSocket Secure)
+        // Si estamos en GitHub Pages (producción), usar Railway con WSS
+        if (window.location.hostname === 'heiner2001.github.io') {
           return 'wss://web-production-61c3.up.railway.app/ws/activities/';
         }
         // En desarrollo, usar localhost

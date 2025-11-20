@@ -31,14 +31,15 @@ function App() {
   const checkAuth = async () => {
     try {
       // Intentar obtener información del usuario
-      // En producción, usar URL de Railway
+      // PRIORIDAD: Verificar hostname primero (más confiable en tiempo de ejecución)
       const getApiBaseUrl = () => {
+        // Si estamos en GitHub Pages (producción), usar Railway
+        if (window.location.hostname === 'heiner2001.github.io') {
+          return 'https://web-production-61c3.up.railway.app';
+        }
+        // Si hay variable de entorno, usarla
         if (import.meta.env.VITE_API_BASE_URL) {
           return import.meta.env.VITE_API_BASE_URL;
-        }
-        // En producción (GitHub Pages), usar URL de Railway
-        if (import.meta.env.PROD || window.location.hostname === 'heiner2001.github.io') {
-          return 'https://web-production-61c3.up.railway.app';
         }
         // En desarrollo, usar localhost
         return 'http://localhost:8000';
