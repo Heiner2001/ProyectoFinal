@@ -262,14 +262,18 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 # Orígenes confiables para CSRF
+csrf_origins_env = os.getenv(
+    'CSRF_TRUSTED_ORIGINS',
+    'http://localhost:5173,http://127.0.0.1:5173'
+)
 CSRF_TRUSTED_ORIGINS = [
     origin.strip() 
-    for origin in os.getenv(
-        'CSRF_TRUSTED_ORIGINS',
-        'http://localhost:5173,http://127.0.0.1:5173'
-    ).split(',')
+    for origin in csrf_origins_env.split(',')
     if origin.strip()  # Solo incluir orígenes no vacíos
 ]
+# Log para debugging (remover en producción)
+logger.info(f"CSRF_TRUSTED_ORIGINS configurado: {CSRF_TRUSTED_ORIGINS}")
+logger.info(f"CSRF_TRUSTED_ORIGINS desde env: {csrf_origins_env}")
 
 # Configuración de cookies de sesión
 # En producción, usar SameSite='None' y Secure=True para HTTPS
