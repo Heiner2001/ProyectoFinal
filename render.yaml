@@ -29,4 +29,10 @@ services:
         value: "None"
       - key: CSRF_COOKIE_SECURE
         value: "True"
+      - key: SUPERUSER_USERNAME
+        value: "admin"
+      - key: SUPERUSER_EMAIL
+        value: "admin@example.com"
+      - key: SUPERUSER_PASSWORD
+        sync: false  # Configurar manualmente con una contraseña segura
 
