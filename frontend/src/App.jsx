@@ -31,10 +31,20 @@ function App() {
   const checkAuth = async () => {
     try {
       // Intentar obtener información del usuario
-      // En producción, usar URL completa del backend
-      const apiBase = window.location.hostname === 'heiner2001.github.io' 
-        ? 'https://kanban-backend-9wbt.onrender.com' 
-        : '';
+      // En producción, usar URL de Railway
+      const getApiBaseUrl = () => {
+        if (import.meta.env.VITE_API_BASE_URL) {
+          return import.meta.env.VITE_API_BASE_URL;
+        }
+        // En producción (GitHub Pages), usar URL de Railway
+        if (import.meta.env.PROD || window.location.hostname === 'heiner2001.github.io') {
+          return 'https://web-production-61c3.up.railway.app';
+        }
+        // En desarrollo, usar localhost
+        return 'http://localhost:8000';
+      };
+      
+      const apiBase = getApiBaseUrl();
       const response = await fetch(`${apiBase}/api/user/`, {
         credentials: 'include',
         headers: {
