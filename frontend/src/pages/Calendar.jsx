@@ -420,7 +420,10 @@ function Calendar() {
         }
       } else if (err.request) {
         // Error de red
-        setEmailStatus('❌ Error: No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8000');
+        const backendUrl = import.meta.env.PROD || window.location.hostname === 'heiner2001.github.io' 
+          ? 'https://web-production-61c3.up.railway.app'
+          : 'http://localhost:8000';
+        setEmailStatus(`❌ Error: No se pudo conectar con el servidor. Verifica que el backend esté corriendo en ${backendUrl}`);
       } else {
         // Otro tipo de error
         setEmailStatus(`❌ Error al enviar los correos: ${err.message || 'Error desconocido'}`);

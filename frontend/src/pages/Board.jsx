@@ -89,10 +89,17 @@ function Board() {
 
     try {
       // Conectar directamente al backend para WebSockets
-      // Usar localhost en lugar de 127.0.0.1 para que las cookies se envíen correctamente
-      const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-      // Usar localhost:8000 para que las cookies de sesión se envíen correctamente
-      const socketUrl = `${protocol}://localhost:8000/ws/activities/`;
+      // En producción usar Railway, en desarrollo usar localhost
+      const getWebSocketUrl = () => {
+        if (import.meta.env.PROD || window.location.hostname === 'heiner2001.github.io') {
+          // En producción, usar Railway con WSS (WebSocket Secure)
+          return 'wss://web-production-61c3.up.railway.app/ws/activities/';
+        }
+        // En desarrollo, usar localhost
+        const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        return `${protocol}://localhost:8000/ws/activities/`;
+      };
+      const socketUrl = getWebSocketUrl();
       console.log('[WebSocket] Intentando conectar a:', socketUrl);
       
       // Obtener las cookies de sesión para enviarlas en el WebSocket

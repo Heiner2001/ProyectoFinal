@@ -60,12 +60,12 @@ function Login({ onLogin }) {
         if (import.meta.env.VITE_API_BASE_URL) {
           return import.meta.env.VITE_API_BASE_URL;
         }
-        // En producción (GitHub Pages), usar URL completa del backend
-        if (window.location.hostname === 'heiner2001.github.io') {
-          return 'https://kanban-backend-9wbt.onrender.com';
+        // En producción (GitHub Pages), usar URL de Railway
+        if (import.meta.env.PROD || window.location.hostname === 'heiner2001.github.io') {
+          return 'https://web-production-61c3.up.railway.app';
         }
-        // En desarrollo, usar ruta relativa (proxy de Vite)
-        return '';
+        // En desarrollo, usar localhost
+        return 'http://localhost:8000';
       };
       
       const apiBase = getApiBaseUrl();
@@ -243,10 +243,12 @@ function Login({ onLogin }) {
         if (import.meta.env.VITE_API_BASE_URL) {
           return import.meta.env.VITE_API_BASE_URL;
         }
-        if (window.location.hostname === 'heiner2001.github.io') {
-          return 'https://kanban-backend-9wbt.onrender.com';
+        // En producción (GitHub Pages), usar URL de Railway
+        if (import.meta.env.PROD || window.location.hostname === 'heiner2001.github.io') {
+          return 'https://web-production-61c3.up.railway.app';
         }
-        return '';
+        // En desarrollo, usar localhost
+        return 'http://localhost:8000';
       };
       
       const apiBase = getApiBaseUrl();
