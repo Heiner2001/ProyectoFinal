@@ -33,7 +33,7 @@ function App() {
       // Intentar obtener información del usuario
       // En producción, usar URL completa del backend
       const apiBase = window.location.hostname === 'heiner2001.github.io' 
-        ? 'https://kanban-backend.onrender.com' 
+        ? 'https://kanban-backend-9wbt.onrender.com' 
         : '';
       const response = await fetch(`${apiBase}/api/user/`, {
         credentials: 'include',

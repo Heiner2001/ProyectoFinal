@@ -55,10 +55,27 @@ function Login({ onLogin }) {
       console.log('Username:', username);
       console.log('Cookies antes de enviar:', document.cookie);
 
+      // Obtener la URL base de la API
+      const getApiBaseUrl = () => {
+        if (import.meta.env.VITE_API_BASE_URL) {
+          return import.meta.env.VITE_API_BASE_URL;
+        }
+        // En producción (GitHub Pages), usar URL completa del backend
+        if (window.location.hostname === 'heiner2001.github.io') {
+          return 'https://kanban-backend-9wbt.onrender.com';
+        }
+        // En desarrollo, usar ruta relativa (proxy de Vite)
+        return '';
+      };
+      
+      const apiBase = getApiBaseUrl();
+      const loginUrl = apiBase ? `${apiBase}/api/login/` : '/api/login/';
+      
+      console.log('Intentando conectar a:', loginUrl);
+
       // OBLIGATORIO: credentials/include es necesario para que las cookies se envíen
-      // Usar ruta relativa - Vite proxy redirige al backend
       const response = await axios.post(
-        '/api/login/',
+        loginUrl,
         {
           username: username.trim(),
           password: password,
@@ -227,7 +244,7 @@ function Login({ onLogin }) {
           return import.meta.env.VITE_API_BASE_URL;
         }
         if (window.location.hostname === 'heiner2001.github.io') {
-          return 'https://kanban-backend.onrender.com';
+          return 'https://kanban-backend-9wbt.onrender.com';
         }
         return '';
       };
