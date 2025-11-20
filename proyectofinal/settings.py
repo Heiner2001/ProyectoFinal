@@ -267,7 +267,8 @@ cors_origins_from_env = [
 
 # Orígenes hardcodeados (siempre incluidos)
 CORS_ALLOWED_ORIGINS = [
-    'https://heiner2001.github.io',  # Frontend en GitHub Pages
+    'https://heiner2001.github.io',
+    'https://heiner2001.github.io/ProyectoFinal',
 ]
 
 # Agregar orígenes desde variable de entorno (evitar duplicados)
@@ -289,8 +290,9 @@ csrf_origins_from_env = [
 
 # Orígenes hardcodeados (siempre incluidos)
 CSRF_TRUSTED_ORIGINS = [
-    'https://web-production-61c3.up.railway.app',  # Dominio de Railway
-    'https://heiner2001.github.io',  # Frontend en GitHub Pages
+    'https://web-production-61c3.up.railway.app',
+    'https://heiner2001.github.io',
+    'https://heiner2001.github.io/ProyectoFinal',
 ]
 
 # Agregar orígenes desde variable de entorno (evitar duplicados)
