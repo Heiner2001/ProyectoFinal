@@ -1,7 +1,8 @@
 // Configuración de la API
-// En producción: usa la variable de entorno VITE_API_BASE_URL
-// En desarrollo: usa ruta relativa para que Vite proxy redirija al backend
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? '' : 'https://kanban-backend-9wbt.onrender.com');
+// PASO 1: Usar URL de Railway en producción, localhost en desarrollo
+const API_BASE_URL = import.meta.env.PROD 
+  ? "https://web-production-61c3.up.railway.app" 
+  : "http://localhost:8000";
 
 export const API_CONFIG = {
   baseURL: API_BASE_URL,

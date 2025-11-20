@@ -40,12 +40,14 @@ ALLOWED_HOSTS=*.railway.app,*.up.railway.app
 USE_HTTPS=True
 DATABASE_URL=<Railway lo genera automáticamente desde la base de datos>
 CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,https://heiner2001.github.io,https://heiner2001.github.io/ProyectoFinal
-CSRF_TRUSTED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,https://heiner2001.github.io,https://heiner2001.github.io/ProyectoFinal
+CSRF_TRUSTED_ORIGINS=https://web-production-61c3.up.railway.app,http://localhost:5173,http://127.0.0.1:5173,https://heiner2001.github.io,https://heiner2001.github.io/ProyectoFinal
 SESSION_COOKIE_SAMESITE=None
 SESSION_COOKIE_SECURE=True
 CSRF_COOKIE_SAMESITE=None
 CSRF_COOKIE_SECURE=True
 ```
+
+**⚠️ IMPORTANTE**: Reemplaza `web-production-61c3.up.railway.app` con tu dominio real de Railway. Lo encontrarás en **Settings** → **Networking** → **Domain**.
 
 **Nota sobre DATABASE_URL**: Railway conecta automáticamente la base de datos al servicio web. Si no aparece, puedes:
 - Hacer clic en la base de datos PostgreSQL
@@ -126,6 +128,46 @@ Una vez completado:
 
 ## 🔧 Solución de Problemas
 
+### Error 404: "No encontrado" o "El tren no ha llegado a la estación"
+
+Este error significa que Railway no está entregando el tráfico a tu aplicación. Sigue estos pasos:
+
+1. **Verifica que el servicio esté activo:**
+   - Ve a tu proyecto en Railway
+   - Verifica que el servicio esté en estado "Active" (no "Sleep" o "Stopped")
+   - Si está en "Sleep", haz clic en el servicio y luego en "Restart"
+
+2. **Verifica que el dominio esté generado:**
+   - Ve a **Settings** → **Networking**
+   - Debe aparecer un dominio (ej: `tu-proyecto-production.up.railway.app`)
+   - Si no hay dominio, haz clic en **Generate Domain**
+   - **IMPORTANTE**: Espera 1-2 minutos después de generar el dominio para que se propague
+
+3. **Verifica las variables de entorno:**
+   - Ve a **Variables** y asegúrate de que `ALLOWED_HOSTS` incluya tu dominio de Railway
+   - Debe ser algo como: `*.railway.app,*.up.railway.app,tu-proyecto-production.up.railway.app`
+   - O simplemente: `*` (menos seguro pero funciona para pruebas)
+
+4. **Verifica el Start Command:**
+   - Ve a **Settings** → **Deploy**
+   - El **Start Command** debe ser: `daphne -b 0.0.0.0 -p $PORT proyectofinal.asgi:application`
+   - Railway usa la variable `$PORT` automáticamente
+
+5. **Revisa los logs:**
+   - Ve a **Deployments** → **View Logs**
+   - Verifica que el servidor esté escuchando correctamente
+   - Debe aparecer: `INFO Listening on TCP address 0.0.0.0:8080` (o el puerto que Railway asigne)
+
+6. **Prueba con la URL raíz primero:**
+   - Intenta acceder a: `https://tu-dominio.up.railway.app/` (sin `/api/user/`)
+   - Si funciona, el problema puede ser con las rutas específicas
+   - Si no funciona, el problema es con el dominio o el servicio
+
+7. **Redeploy si es necesario:**
+   - Ve a **Deployments**
+   - Haz clic en **Redeploy** en el deployment más reciente
+   - Espera a que termine el deployment
+
 ### Error: "mise install failed" o "no se encontró ninguna versión precompilada de Python"
 
 **Solución**: 
@@ -159,11 +201,28 @@ Una vez completado:
 - La primera petición puede tardar ~30 segundos en "despertar"
 - Considera usar el plan de pago si necesitas que esté siempre activo
 
+### Error 403: "CSRF verification failed" o "Origin checking failed"
+
+Este error ocurre cuando intentas hacer login o enviar formularios desde el dominio de Railway.
+
+**Solución:**
+1. Ve a **Variables** en tu servicio de Railway
+2. Busca la variable `CSRF_TRUSTED_ORIGINS`
+3. Asegúrate de que incluya tu dominio de Railway con `https://`:
+   ```
+   https://web-production-61c3.up.railway.app,http://localhost:5173,http://127.0.0.1:5173,https://heiner2001.github.io,https://heiner2001.github.io/ProyectoFinal
+   ```
+   ⚠️ **Reemplaza `web-production-61c3.up.railway.app` con tu dominio real**
+4. También verifica que `USE_HTTPS=True` esté configurado
+5. Haz clic en **Redeploy** para aplicar los cambios
+
+**Nota**: El dominio debe incluir el protocolo `https://` y no debe terminar con `/`
+
 ### Error de CORS
 
 - Verifica que `CORS_ALLOWED_ORIGINS` incluya la URL de tu frontend
 - Asegúrate de que `USE_HTTPS=True` si estás usando HTTPS
-- Verifica que `CSRF_TRUSTED_ORIGINS` también incluya tu frontend
+- Verifica que `CSRF_TRUSTED_ORIGINS` también incluya tu frontend y tu dominio de Railway
 
 ## 📝 Archivos Importantes para Railway
 
