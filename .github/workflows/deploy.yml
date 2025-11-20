@@ -51,6 +51,12 @@ jobs:
           cp index.html 404.html
           echo "404.html created for React Router SPA routing"
       
+      - name: Create .nojekyll file
+        run: |
+          cd dist
+          touch .nojekyll
+          echo ".nojekyll file created"
+      
       - name: Setup Pages
         uses: actions/configure-pages@v4
       

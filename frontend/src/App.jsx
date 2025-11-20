@@ -11,6 +11,18 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // Obtener el base path para GitHub Pages
+  const getBasePath = () => {
+    // En producción (GitHub Pages), usar /ProyectoFinal/
+    if (window.location.hostname === 'heiner2001.github.io') {
+      return '/ProyectoFinal';
+    }
+    // En desarrollo, usar /
+    return '';
+  };
+
+  const basePath = getBasePath();
+
   useEffect(() => {
     // Verificar si el usuario está autenticado
     checkAuth();
@@ -19,8 +31,11 @@ function App() {
   const checkAuth = async () => {
     try {
       // Intentar obtener información del usuario
-      // Usar ruta relativa - Vite proxy redirige al backend
-      const response = await fetch('/api/user/', {
+      // En producción, usar URL completa del backend
+      const apiBase = window.location.hostname === 'heiner2001.github.io' 
+        ? 'https://kanban-backend.onrender.com' 
+        : '';
+      const response = await fetch(`${apiBase}/api/user/`, {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
@@ -53,7 +68,7 @@ function App() {
   }
 
   return (
-    <Router>
+    <Router basename={basePath}>
       <Routes>
         <Route 
           path="/login" 
