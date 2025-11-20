@@ -49,9 +49,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # PASO 3: CorsMiddleware debe estar PRIMERO, antes de SecurityMiddleware
+    'corsheaders.middleware.CorsMiddleware',  # CORS debe estar al principio
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',  # Para servir archivos estáticos en producción
-    'corsheaders.middleware.CorsMiddleware',  # CORS debe estar antes de CommonMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -250,42 +251,70 @@ if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Configuración CORS para permitir peticiones desde React
-# OPCIÓN B → Configurar CORS + Cookies
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
+# PASO 2: Agregar frontend a CORS_ALLOWED_ORIGINS
+# PASO 5: Habilitar credenciales para cookies
+CORS_ALLOW_CREDENTIALS = True  # Permite que React envíe cookies correctamente
+
+cors_origins_env = os.getenv(
+    'CORS_ALLOWED_ORIGINS',
+    'http://localhost:5173,http://127.0.0.1:5173'
+)
+cors_origins_from_env = [
     origin.strip() 
-    for origin in os.getenv(
-        'CORS_ALLOWED_ORIGINS',
-        'http://localhost:5173,http://127.0.0.1:5173'
-    ).split(',')
+    for origin in cors_origins_env.split(',')
     if origin.strip()
 ]
 
+# Orígenes hardcodeados (siempre incluidos)
+CORS_ALLOWED_ORIGINS = [
+    'https://heiner2001.github.io',  # Frontend en GitHub Pages
+]
+
+# Agregar orígenes desde variable de entorno (evitar duplicados)
+for origin in cors_origins_from_env:
+    if origin not in CORS_ALLOWED_ORIGINS:
+        CORS_ALLOWED_ORIGINS.append(origin)
+
 # Orígenes confiables para CSRF
+# PASO 1: Agregar dominio de Railway hardcodeado + desde variable de entorno
 csrf_origins_env = os.getenv(
     'CSRF_TRUSTED_ORIGINS',
     'http://localhost:5173,http://127.0.0.1:5173'
 )
-CSRF_TRUSTED_ORIGINS = [
+csrf_origins_from_env = [
     origin.strip() 
     for origin in csrf_origins_env.split(',')
     if origin.strip()  # Solo incluir orígenes no vacíos
 ]
+
+# Orígenes hardcodeados (siempre incluidos)
+CSRF_TRUSTED_ORIGINS = [
+    'https://web-production-61c3.up.railway.app',  # Dominio de Railway
+    'https://heiner2001.github.io',  # Frontend en GitHub Pages
+]
+
+# Agregar orígenes desde variable de entorno (evitar duplicados)
+for origin in csrf_origins_from_env:
+    if origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(origin)
+
 # Log para debugging (remover en producción)
 logger.info(f"CSRF_TRUSTED_ORIGINS configurado: {CSRF_TRUSTED_ORIGINS}")
 logger.info(f"CSRF_TRUSTED_ORIGINS desde env: {csrf_origins_env}")
 
 # Configuración de cookies de sesión
-# En producción, usar SameSite='None' y Secure=True para HTTPS
+# PASO 4: Configuración de cookies para producción con HTTPS
 USE_HTTPS = os.getenv('USE_HTTPS', 'False').lower() == 'true'
 SESSION_COOKIE_SAMESITE = "None" if USE_HTTPS else "Lax"
 SESSION_COOKIE_SECURE = USE_HTTPS  # True en producción con HTTPS
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_DOMAIN = os.getenv('SESSION_COOKIE_DOMAIN', None)
 SESSION_COOKIE_PATH = '/'  # Path para la cookie
+
+# CSRF Cookie settings
 CSRF_COOKIE_SAMESITE = "None" if USE_HTTPS else "Lax"
 CSRF_COOKIE_SECURE = USE_HTTPS  # True en producción con HTTPS
-CSRF_COOKIE_HTTPONLY = False  # Necesario para que JavaScript pueda leerlo
+CSRF_COOKIE_HTTPONLY = False  # PASO 4: False para que el frontend pueda leerlo
 CSRF_COOKIE_DOMAIN = os.getenv('CSRF_COOKIE_DOMAIN', None)
 
 # Métodos HTTP permitidos
